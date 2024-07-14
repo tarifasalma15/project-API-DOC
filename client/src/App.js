@@ -2,6 +2,9 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import NewAppointment from './pages/NewAppointment'; 
+
+
 import { useEffect } from 'react';
 import { gapi } from 'gapi-script';
 
@@ -25,6 +28,7 @@ function App() {
           <Route path='/' element={<HomePage />} />
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
+          <Route path="/new-appointment" element={<NewAppointment />} />
         </Routes>
       </BrowserRouter>
     </div>
