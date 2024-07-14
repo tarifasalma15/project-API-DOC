@@ -19,12 +19,12 @@ const app = express();
 // middleware
 app.use(express.json());
 app.use(morgan('dev'));
-app.use(cors()); // Utilisez le middleware CORS
+app.use(cors()); 
 
 // routes
 app.use('/api/v1/user', require('./routes/userRoutes'));
 app.use('/api/v1/appointments', require('./routes/appointmentRoutes'));
-app.use('/api/v1/notifications', require('./routes/notificationRoutes'));
+
 
 const server = http.createServer(app);
 
@@ -59,10 +59,11 @@ io.on('connection', (socket) => {
     });
 });
 
+module.exports = { app, server, io };
+
 // listen port
 const port = process.env.PORT || 8080;
 
 server.listen(port, () => {
     console.log(`server running in ${process.env.NODE_ENV} MODE ON PORT ${port}`.bgCyan.white);
 });
-
