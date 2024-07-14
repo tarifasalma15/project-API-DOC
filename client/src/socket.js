@@ -1,5 +1,7 @@
 import { io } from 'socket.io-client';
 
-const socket = io('http://localhost:8080'); // Remplacez par l'URL de votre serveur en production
+const socket = io('http://localhost:8080', {
+    transports: ['websocket', 'polling'],
+});
 
 export default socket;

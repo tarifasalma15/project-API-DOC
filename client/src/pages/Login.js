@@ -1,9 +1,10 @@
 import React from 'react';
 import { Form, Input, Button, message } from 'antd';
 import { GoogleLogin } from '@react-oauth/google';
+import {jwtDecode} from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';  
+
 const Login = () => {
   const navigate = useNavigate();
 
