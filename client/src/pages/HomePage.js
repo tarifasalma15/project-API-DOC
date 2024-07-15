@@ -89,6 +89,11 @@ const HomePage = () => {
     navigate('/new-appointment');
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   return (
     <div className="home-container">
       <h1>Welcome to the Doctor Appointment System</h1>
@@ -96,6 +101,10 @@ const HomePage = () => {
       <Button type="primary" onClick={handleNewAppointment}>
         Book a New Appointment
       </Button>
+     
+        <Button type="default" onClick={handleLogout}>
+          Logout
+        </Button>
 
       <h2>Your Appointments</h2>
       <List
@@ -121,6 +130,7 @@ const HomePage = () => {
           </List.Item>
         )}
       />
+      
     </div>
   );
 };

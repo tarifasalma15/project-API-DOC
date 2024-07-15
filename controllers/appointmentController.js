@@ -1,48 +1,25 @@
 const Appointment = require('../models/appointmentModel');
-const io = require('../server').io; 
+const { io } = require('../server'); 
 
 // Create appointment
 const createAppointment = async (req, res) => {
   try {
-    const newAppointment = new Appointment(req.body);
+    console.log('Request Body:', req.body); // Log the request body
+    const { patientName, doctorName, date, time } = req.body;
+    if (!patientName || !doctorName || !date || !time) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+    const newAppointment = new Appointment({ patientName, doctorName, date, time });
     await newAppointment.save();
+    console.log('New appointment created:', newAppointment);
     io.emit('appointmentCreated', newAppointment); // Emit event
     res.status(201).json(newAppointment);
   } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
+    console.error('Error creating appointment:', error); // Log the error
+    res.status(500).send({ message: 'Internal Server Error' });
   }
 };
 
-// Update appointment
-const updateAppointment = async (req, res) => {
-  try {
-    const updatedAppointment = await Appointment.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    io.emit('appointmentUpdated', updatedAppointment); // Emit event
-    res.status(200).json(updatedAppointment);
-  } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
-  }
-};
 
-// Delete appointment
-const deleteAppointment = async (req, res) => {
-  try {
-    await Appointment.findByIdAndDelete(req.params.id);
-    io.emit('appointmentDeleted', req.params.id); // Emit event
-    res.status(200).json({ message: 'Appointment deleted' });
-  } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
-  }
-};
 
-// Get appointments
-const getAppointments = async (req, res) => {
-  try {
-    const appointments = await Appointment.find({}); // Vous pouvez filtrer par utilisateur ici
-    res.status(200).json(appointments);
-  } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
-  }
-};
-
-module.exports = { createAppointment, updateAppointment, deleteAppointment, getAppointments };
+module.exports = { createAppointment };

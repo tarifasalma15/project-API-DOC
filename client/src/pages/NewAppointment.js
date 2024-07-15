@@ -30,6 +30,15 @@ const NewAppointment = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
+  const goToHome = () => {
+    navigate('/');
+  };
+
   return (
     <div className="new-appointment-container">
       <h1>Create New Appointment</h1>
@@ -52,6 +61,14 @@ const NewAppointment = () => {
           </Button>
         </Form.Item>
       </Form>
+      <div style={{ marginTop: '20px' }}>
+        <Button type="default" onClick={goToHome} style={{ marginRight: '10px' }}>
+          Home
+        </Button>
+        <Button type="default" onClick={handleLogout}>
+          Logout
+        </Button>
+      </div>
     </div>
   );
 };
