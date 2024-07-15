@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button, List, message } from 'antd';
 import axios from 'axios';
 import socket from '../socket';
-import { useNavigate } from 'react-router-dom'; // Importez useNavigate
-import '../styles/HomeStyles.css'; 
+import '../styles/HomeStyles.css';
 
 const HomePage = () => {
   const [appointments, setAppointments] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [user, setUser] = useState(null);
-  const navigate = useNavigate(); // Initialisez navigate
+  const navigate = useNavigate();
 
   const getUserData = async () => {
     try {
-      console.log('Fetching user data');
       const res = await axios.post(
         '/api/v1/user/getUserData',
         {},
@@ -23,25 +22,22 @@ const HomePage = () => {
           },
         }
       );
-      console.log('User data fetched', res.data);
       setUser(res.data.data);
     } catch (error) {
-      console.log('Error fetching user data', error);
+      console.log(error);
     }
   };
 
   const getAppointments = async () => {
     try {
-      console.log('Fetching appointments');
       const res = await axios.get('/api/v1/appointments', {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('token'),
         },
       });
-      console.log('Appointments fetched', res.data);
       setAppointments(res.data);
     } catch (error) {
-      console.error('Error fetching appointments', error);
+      console.error(error);
       message.error('Failed to load appointments');
     }
   };
@@ -52,7 +48,6 @@ const HomePage = () => {
 
     // Socket.IO event listeners
     socket.on('appointmentCreated', (appointment) => {
-      console.log('Appointment created event received', appointment);
       setNotifications((prevNotifications) => [
         ...prevNotifications,
         `New appointment created: ${appointment.patientName} with Dr. ${appointment.doctorName}`,
@@ -61,7 +56,6 @@ const HomePage = () => {
     });
 
     socket.on('appointmentUpdated', (appointment) => {
-      console.log('Appointment updated event received', appointment);
       setNotifications((prevNotifications) => [
         ...prevNotifications,
         `Appointment updated: ${appointment.patientName} with Dr. ${appointment.doctorName}`,
@@ -74,7 +68,6 @@ const HomePage = () => {
     });
 
     socket.on('appointmentDeleted', (appointmentId) => {
-      console.log('Appointment deleted event received', appointmentId);
       setNotifications((prevNotifications) => [
         ...prevNotifications,
         `Appointment deleted with ID: ${appointmentId}`,
@@ -104,34 +97,30 @@ const HomePage = () => {
         Book a New Appointment
       </Button>
 
-      <div className="list-container">
-        <h2>Your Appointments</h2>
-        <List
-          itemLayout="horizontal"
-          dataSource={appointments}
-          renderItem={(appointment) => (
-            <List.Item>
-              <List.Item.Meta
-                title={`${appointment.patientName} with Dr. ${appointment.doctorName}`}
-                description={`${appointment.date} at ${appointment.time}`}
-              />
-            </List.Item>
-          )}
-        />
-      </div>
+      <h2>Your Appointments</h2>
+      <List
+        itemLayout="horizontal"
+        dataSource={appointments}
+        renderItem={(appointment) => (
+          <List.Item>
+            <List.Item.Meta
+              title={`${appointment.patientName} with Dr. ${appointment.doctorName}`}
+              description={`${appointment.date} at ${appointment.time}`}
+            />
+          </List.Item>
+        )}
+      />
 
-      <div className="notifications-container">
-        <h2>Notifications</h2>
-        <List
-          itemLayout="horizontal"
-          dataSource={notifications}
-          renderItem={(notification, index) => (
-            <List.Item key={index}>
-              <List.Item.Meta description={notification} />
-            </List.Item>
-          )}
-        />
-      </div>
+      <h2>Notifications</h2>
+      <List
+        itemLayout="horizontal"
+        dataSource={notifications}
+        renderItem={(notification, index) => (
+          <List.Item key={index}>
+            <List.Item.Meta description={notification} />
+          </List.Item>
+        )}
+      />
     </div>
   );
 };

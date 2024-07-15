@@ -3,7 +3,7 @@ import { Form, Input, message } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-import { jwtDecode } from 'jwt-decode'; 
+import { jwtDecode } from 'jwt-decode'; // Assurez-vous que cette ligne est correcte
 import '../styles/RegisterStyles.css';
 
 const clientId = "679022050996-2ig8hertalm6vodug29iv9slussvor7o.apps.googleusercontent.com";
@@ -27,7 +27,7 @@ const Register = () => {
   };
 
   const onSuccess = async (response) => {
-    const userProfile = jwtDecode(response.credential); 
+    const userProfile = jwtDecode(response.credential); // Decode the token to get the user profile
     console.log("Register Success! current User: ", userProfile);
 
     try {

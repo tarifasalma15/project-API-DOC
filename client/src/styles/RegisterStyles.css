@@ -1,14 +1,27 @@
 .form-container { 
     display: flex;
-    align-items : center;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
     height: 100vh;
-    
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center; /* Centrer le contenu */
 }
 
 .register-form { 
-    border : 1px solid black;
+    border: 1px solid black;
     padding: 30px;
-    width : 40% ; 
-    
+    width: 40%; 
+}
+
+.google-login-container {
+    margin-bottom: 20px; 
+}
+
+.register-form button {
+    width: 100%; 
 }

@@ -76,7 +76,7 @@ const googleLoginController = async (req, res) => {
     let user = await userModel.findOne({ email });
 
     if (!user) {
-      user = new userModel({ email, name, password: 'google-login' }); 
+      user = new userModel({ email, name, password: 'google-login' }); // Vous pouvez utiliser un mot de passe fictif
       await user.save();
     }
 

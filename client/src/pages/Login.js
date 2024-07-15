@@ -1,18 +1,20 @@
 import React from 'react';
-import { Form, Input, Button, message } from 'antd';
-import { GoogleLogin } from '@react-oauth/google';
-import {jwtDecode} from 'jwt-decode';
-import { useNavigate } from 'react-router-dom';
+import { Form, Input, message } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import '../styles/RegisterStyles.css';
+
+const clientId = "679022050996-2ig8hertalm6vodug29iv9slussvor7o.apps.googleusercontent.com";
 
 const Login = () => {
   const navigate = useNavigate();
 
-  const onFinish = async (values) => {
+  const onfinishHandler = async (values) => {
     try {
       const res = await axios.post('/api/v1/user/login', values);
       if (res.data.success) {
-        localStorage.setItem('token', res.data.token);
+        localStorage.setItem("token", res.data.token);
         message.success('Login successfully');
         navigate('/');
       } else {
@@ -20,31 +22,13 @@ const Login = () => {
       }
     } catch (error) {
       console.log(error);
-      message.error('Something went wrong');
+      message.error('something went wrong');
     }
   };
 
-  const onSuccess = async (response) => {
-    const userProfile = jwtDecode(response.credential);
-    console.log("Login Success! current User: ", userProfile);
-
-    try {
-      const res = await axios.post('/api/v1/user/google-login', {
-        email: userProfile.email,
-        name: userProfile.name,
-      });
-
-      if (res.data.success) {
-        message.success('Login successfully');
-        localStorage.setItem("token", res.data.token);
-        navigate('/');
-      } else {
-        message.error(res.data.message);
-      }
-    } catch (error) {
-      console.log(error);
-      message.error('Something went wrong');
-    }
+  const onSuccess = (response) => {
+    console.log("Login Success! current User: ", response);
+    navigate('/');
   };
 
   const onError = () => {
@@ -53,20 +37,30 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <Form layout="vertical" onFinish={onFinish}>
-        <Form.Item label="Email" name="email" rules={[{ required: true, message: 'Please input your email!' }]}>
-          <Input />
-        </Form.Item>
-        <Form.Item label="Password" name="password" rules={[{ required: true, message: 'Please input your password!' }]}>
-          <Input.Password />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit">Login</Button>
-        </Form.Item>
-      </Form>
-      <GoogleLogin onSuccess={onSuccess} onError={onError} />
-    </div>
+    <GoogleOAuthProvider clientId={clientId}>
+      <div className="form-container">
+        <div className="google-login-container">
+          <GoogleLogin
+            onSuccess={onSuccess}
+            onError={onError}
+          />
+        </div>
+        <Form layout="vertical" onFinish={onfinishHandler} className="register-form">
+          <h3 className="text-center">Login Form</h3>
+
+          <Form.Item label="Email" name="email">
+            <Input type="email" required />
+          </Form.Item>
+          <Form.Item label="Password" name="password">
+            <Input type="password" required />
+          </Form.Item>
+          <Link to="/register" className="ms-2">Not a user? Register here</Link>
+          <button className="btn-btn-primary" type="submit">
+            Login
+          </button>
+        </Form>
+      </div>
+    </GoogleOAuthProvider>
   );
 };
 
