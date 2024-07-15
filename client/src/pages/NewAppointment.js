@@ -3,6 +3,8 @@ import { Form, Input, DatePicker, TimePicker, Button, message } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+import '../styles/NewAppointment.css';
+
 const NewAppointment = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -20,10 +22,11 @@ const NewAppointment = () => {
           },
         }
       );
-      if (res.data) {
+      if (res.status === 201) { 
         message.success('Appointment created successfully');
         navigate('/');
-      }
+      } 
+      
     } catch (error) {
       console.error(error);
       message.error('Failed to create appointment');
@@ -39,9 +42,19 @@ const NewAppointment = () => {
     navigate('/');
   };
 
+  
+
+
   return (
     <div className="new-appointment-container">
       <h1>Create New Appointment</h1>
+      <Button type="default" onClick={goToHome} style={{ marginRight: '10px' }}>
+        Home
+      </Button>
+      <Button type="default" onClick={handleLogout}>
+        Logout
+      </Button>
+      
       <Form form={form} layout="vertical" onFinish={onFinish}>
         <Form.Item label="Patient Name" name="patientName" rules={[{ required: true, message: 'Please input the patient name!' }]}>
           <Input />
@@ -61,14 +74,7 @@ const NewAppointment = () => {
           </Button>
         </Form.Item>
       </Form>
-      <div style={{ marginTop: '20px' }}>
-        <Button type="default" onClick={goToHome} style={{ marginRight: '10px' }}>
-          Home
-        </Button>
-        <Button type="default" onClick={handleLogout}>
-          Logout
-        </Button>
-      </div>
+     
     </div>
   );
 };

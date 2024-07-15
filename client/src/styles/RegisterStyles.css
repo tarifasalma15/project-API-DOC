@@ -9,7 +9,8 @@
     border: 1px solid #ccc;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center; /* Centrer le contenu */
+    text-align: center; 
+
 }
 
 .register-form { 
@@ -25,3 +26,11 @@
 .register-form button {
     width: 100%; 
 }
+
+
+.logo {
+    display: block;
+    margin: 0 auto 20px auto;
+    width: 100px;
+    height: auto;
+  }

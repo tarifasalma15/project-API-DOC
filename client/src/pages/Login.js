@@ -4,6 +4,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import '../styles/RegisterStyles.css';
+import logo from '../assets/logo.png'; 
+import background from '../assets/hero-bg.png';
+import { jwtDecode } from 'jwt-decode';
 
 const clientId = "679022050996-2ig8hertalm6vodug29iv9slussvor7o.apps.googleusercontent.com";
 
@@ -26,9 +29,27 @@ const Login = () => {
     }
   };
 
-  const onSuccess = (response) => {
-    console.log("Login Success! current User: ", response);
-    navigate('/');
+  const onSuccess = async (response) => {
+    const userProfile = jwtDecode(response.credential); // Changer ici aussi
+    console.log("Login Success! current User: ", userProfile);
+
+    try {
+      const res = await axios.post('/api/v1/user/google-login', {
+        email: userProfile.email,
+        name: userProfile.name,
+      });
+
+      if (res.data.success) {
+        message.success('Login successfully');
+        localStorage.setItem("token", res.data.token);
+        navigate('/');
+      } else {
+        message.error(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      message.error('Something went wrong');
+    }
   };
 
   const onError = () => {
@@ -38,7 +59,7 @@ const Login = () => {
 
   return (
     <GoogleOAuthProvider clientId={clientId}>
-      <div className="form-container">
+      <div className="form-container" style={{ backgroundImage: `url(${background})`}}>
         <div className="google-login-container">
           <GoogleLogin
             onSuccess={onSuccess}
@@ -46,6 +67,7 @@ const Login = () => {
           />
         </div>
         <Form layout="vertical" onFinish={onfinishHandler} className="register-form">
+        <img src={logo} alt="Logo" className="logo" />
           <h3 className="text-center">Login Form</h3>
 
           <Form.Item label="Email" name="email">
