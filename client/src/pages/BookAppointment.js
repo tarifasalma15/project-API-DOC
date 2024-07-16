@@ -63,6 +63,10 @@ const BookAppointment = () => {
   const goToHome = () => {
     navigate('/');
   };
+  const handleReturnHome = () => {
+    navigate('/appointments');
+  };
+
 
   if (loading) {
     return <Spin size="large" className="loading-spinner" />;
@@ -74,6 +78,9 @@ const BookAppointment = () => {
 
   return (
     <div className="book-appointment-container">
+        <button className="return-button" onClick={handleReturnHome}>
+        Return
+      </button>
       <Button type="default" onClick={goToHome} style={{ marginRight: '10px' }}>
         Home
       </Button>

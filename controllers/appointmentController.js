@@ -29,5 +29,24 @@ const bookAppointmentController = async (req, res) => {
 };
 
 
+const getUserAppointmentsController = async (req, res) => {
+        try {
+          const userId = req.body.userId;
+          const user = await users.findById(userId);
+      
+          if (user.role === 'doctor') {
+            // Si l'utilisateur est un docteur, récupérer les rendez-vous où il est le docteur
+            const appointments = await Appointment.find({ doctorId: userId }).populate('userId', 'name');
+            res.status(200).send({ success: true, data: appointments });
+          } else {
+            // Sinon, récupérer les rendez-vous où il est le patient
+            const appointments = await Appointment.find({ userId }).populate('doctorId', 'name');
+            res.status(200).send({ success: true, data: appointments });
+          }
+        } catch (error) {
+          console.log('Error getting appointments:', error);
+          res.status(500).send({ success: false, message: 'Error getting appointments' });
+        }
+      };
 
-module.exports = { bookAppointmentController };
+module.exports = { bookAppointmentController,  getUserAppointmentsController };
