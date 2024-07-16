@@ -1,5 +1,5 @@
-import React from "react";
-import {Form, Input, message , Select } from 'antd';
+import React,  { useState } from "react";
+import {Form, Input, message  , Radio} from 'antd';
 import '../styles/RegisterStyles.css'
 import axios from 'axios'
 import {Link, useNavigate} from "react-router-dom"
@@ -9,14 +9,16 @@ import background from '../assets/hero-bg.png';
 
 
 const clientId = "679022050996-2ig8hertalm6vodug29iv9slussvor7o.apps.googleusercontent.com";
-const { Option } = Select;
+//const { Option } = Select;
 
 const Register = () => {
+    const [role, setRole] = useState('');
+    const [googleUser, setGoogleUser] = useState(null);
     const navigate = useNavigate()
     //form handler 
     const onfinishHandler= async (values) => {
         try {
-            const res = await axios.post('/api/v1/user/register', values )
+            const res = await axios.post('/api/v1/user/register', {...values, role} )
             if (res.data.success){
                 message.success(`Register Successfully!`)
                 navigate('/login')
@@ -37,7 +39,7 @@ const Register = () => {
         const res = await axios.post('/api/v1/user/google-register', {
           email: userProfile.email,
           name: userProfile.name,
-          role: userProfile.role,
+          role: role,
         });
   
         if (res.data.success) {
@@ -57,6 +59,14 @@ const Register = () => {
       console.log("Register Failed!");
       message.error('Google register failed');
     };
+
+    const handleGoogleRegister = () => {
+      if (googleUser && role) {
+          onSuccess(googleUser);
+      } else {
+          message.error('Please select a role');
+      }
+  }
     
     return (
       <div  style={{ background: `url(${background})`}}>
@@ -64,10 +74,26 @@ const Register = () => {
         <div className="form-container">
           <div className="google-login-container">
             <GoogleLogin
-              onSuccess={onSuccess}
-              onError={onError}
+              onSuccess={(response) => { 
+                setGoogleUser(response);  // Set googleUser on success
+                onSuccess(response);
+            }}
+            onError={onError}
             />
           </div>
+          {googleUser && (
+            <div className="role-selection">
+              <h3>Select Role</h3>
+              <Radio.Group onChange={(e) => setRole(e.target.value)} required>
+                <Radio value="patient">Patient</Radio>
+                <Radio value="doctor">Doctor</Radio>
+              </Radio.Group>
+              <button className="btn-btn-primary" onClick={handleGoogleRegister}>
+                Continue
+              </button>
+            </div>
+          )}
+          {!googleUser && (
           <Form layout="vertical" onFinish={onfinishHandler} className="register-form">
             <h3 className="text-center">Register Form</h3>
             <Form.Item label="Name" name="name">
@@ -80,16 +106,17 @@ const Register = () => {
               <Input type="password" required />
             </Form.Item>
             <Form.Item label="Role" name="role">
-                            <Select>
-                                <Option value="patient">Patient</Option>
-                                <Option value="doctor">Doctor</Option>
-                            </Select>
-                        </Form.Item>
+            <Radio.Group onChange={(e) => setRole(e.target.value)} required>
+                <Radio value="patient">Patient</Radio>
+                <Radio value="doctor">Doctor</Radio>
+              </Radio.Group>
+              </Form.Item>
             <Link to="/login" className="ms-2">Already a user? Login here</Link>
             <button className="btn-btn-primary" type="submit">
               Register
             </button>
           </Form>
+          )}
         </div>
       </GoogleOAuthProvider>
       </div>

@@ -1,5 +1,5 @@
 import React, { useEffect,useState } from 'react';
-import { Button , Table, message} from 'antd';
+import { Button, Table , message } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../styles/HomeStyles.css';
@@ -28,6 +28,7 @@ const HomePage = () => {
       
       console.log('User data fetched', res.data);
       setUser(res.data.data);
+     
     } catch (error) {
       console.log('Error fetching user data', error);
     }
@@ -55,7 +56,12 @@ const HomePage = () => {
     getUserData();
     getUserAppointments();
   }, []);
-
+  
+  useEffect(() => {
+    if (user && user.role === 'patient') {
+      navigate('/appointments');
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     console.log('User state updated', user);
@@ -81,7 +87,7 @@ const HomePage = () => {
   const handleSettings = () => {
     navigate('/settings');
   };
-
+  
   const columns = [
     {
       title: user && user.role === 'doctor' ? 'Patient' : 'Doctor',
@@ -105,7 +111,6 @@ const HomePage = () => {
       key: 'description',
     },
   ];
-
   return (
   
     <div className="home-container" style={{ backgroundImage: `url(${background})`}}>
@@ -125,7 +130,7 @@ const HomePage = () => {
           Profile
         </Button>
         <Button type="primary" onClick={handleAppointments}>
-          Appointments with Doctors
+          Appointments with doctors
         </Button>
         <Button type="primary" onClick={handleMessages}>
             Messages
