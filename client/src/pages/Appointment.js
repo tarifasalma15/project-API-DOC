@@ -23,6 +23,8 @@ const Appointments = () => {
         }
       );
       setUser(res.data.data);
+      console.log('User data:', res.data.data); // Log user data
+
     } catch (error) {
       console.log('Error fetching user data', error);
     }
@@ -36,6 +38,7 @@ const Appointments = () => {
           },
         });
         setDoctors(res.data.doctors);
+        console.log('Doctors data:', res.data.doctors); 
       } catch (error) {
         console.log('Error fetching doctors', error);
       }

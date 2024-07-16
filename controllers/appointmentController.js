@@ -49,4 +49,39 @@ const getUserAppointmentsController = async (req, res) => {
         }
       };
 
-module.exports = { bookAppointmentController,  getUserAppointmentsController };
+
+const cancelAppointmentController = async (req, res) => {
+        try {
+          const { appointmentId } = req.params;
+          await Appointment.findByIdAndDelete(appointmentId);
+          res.status(200).send({ success: true, message: 'Appointment cancelled successfully' });
+        } catch (error) {
+          res.status(500).send({ success: false, message: 'Error cancelling appointment' });
+        }
+      };      
+
+
+const updateAppointmentController = async (req, res) => {
+    try {
+      const { appointmentId } = req.params;
+      const updatedData = req.body;
+      const updatedAppointment = await Appointment.findByIdAndUpdate(appointmentId, updatedData, { new: true });
+      res.status(200).send({ success: true, message: 'Appointment updated successfully', data: updatedAppointment });
+    } catch (error) {
+      res.status(500).send({ success: false, message: 'Error updating appointment' });
+    }
+  };      
+
+ const getAppointmentDetailsController = async (req, res) => {
+    try {
+      const { appointmentId } = req.params;
+      const appointment = await Appointment.findById(appointmentId);
+      if (!appointment) {
+        return res.status(404).send({ success: false, message: 'Appointment not found' });
+      }
+      res.status(200).send({ success: true, data: appointment });
+    } catch (error) {
+      res.status(500).send({ success: false, message: 'Error fetching appointment details' });
+    }
+  };
+module.exports = { bookAppointmentController,  getUserAppointmentsController, cancelAppointmentController, updateAppointmentController, getAppointmentDetailsController };

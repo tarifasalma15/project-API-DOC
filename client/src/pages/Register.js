@@ -32,8 +32,15 @@ const Register = () => {
     }
 
     const onSuccess = async (response) => {
+      const token = response.credential;
+    if (!token) {
+      message.error('Invalid token from Google');
+      return;
+    }
       const userProfile = jwtDecode(response.credential); 
       console.log("Register Success! current User: ", userProfile);
+      setGoogleUser(userProfile);
+     
   
       try {
         const res = await axios.post('/api/v1/user/google-register', {
@@ -45,7 +52,7 @@ const Register = () => {
         if (res.data.success) {
           message.success('Register successfully');
           localStorage.setItem("token", res.data.token);
-          navigate('/');
+          navigate('/', { state: { isGoogleLogin: true } });  
         } else {
           message.error(res.data.message);
         }

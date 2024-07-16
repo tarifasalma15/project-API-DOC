@@ -110,7 +110,7 @@ const googleRegisterController = async (req, res) => {
       return res.status(409).send({ message: 'User Already Exist', success: false });
     }
 
-    user = new userModel({ email, name, password: 'google-register', role }); // Vous pouvez utiliser un mot de passe fictif
+    user = new userModel({ email, name, password: 'google-register', role }); 
     await user.save();
 
     const token = jwt.sign({ id: user._id , role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });

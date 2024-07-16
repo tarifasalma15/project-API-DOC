@@ -1,7 +1,7 @@
 import React, { useEffect,useState } from 'react';
 import { Button, Table , message } from 'antd';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/HomeStyles.css';
 import background from '../assets/hero-bg.png';
 
@@ -13,6 +13,8 @@ const HomePage = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+
 
   const getUserData = async () => {
     try {
@@ -56,12 +58,14 @@ const HomePage = () => {
     getUserData();
     getUserAppointments();
   }, []);
+
   
   useEffect(() => {
-    if (user && user.role === 'patient') {
-      navigate('/appointments');
+    const isGoogleLogin = location.state && location.state.isGoogleLogin;
+    if (user && user.role === 'patient' && isGoogleLogin) {
+      navigate('/');
     }
-  }, [user, navigate]);
+  }, [user, navigate, location.state]);
 
   useEffect(() => {
     console.log('User state updated', user);
@@ -87,7 +91,28 @@ const HomePage = () => {
   const handleSettings = () => {
     navigate('/settings');
   };
-  
+  const handleCancelAppointment = async (appointmentId) => {
+    try {
+      const res = await axios.delete(`/api/v1/appointments/cancel/${appointmentId}`, {
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token'),
+        },
+      });
+      if (res.data.success) {
+        message.success('Appointment cancelled successfully');
+        getUserAppointments(); // Refresh the appointments list
+      } else {
+        message.error(res.data.message);
+      }
+    } catch (error) {
+      console.log('Error cancelling appointment', error);
+      message.error('Error cancelling appointment');
+    }
+  };
+
+  const handleEditAppointment = (appointmentId) => {
+    navigate(`/edit-appointment/${appointmentId}`);
+  };
   const columns = [
     {
       title: user && user.role === 'doctor' ? 'Patient' : 'Doctor',
@@ -110,6 +135,17 @@ const HomePage = () => {
       dataIndex: 'description',
       key: 'description',
     },
+    {
+      title: 'Actions',
+      key: 'actions',
+      render: (text, record) => (
+        <span>
+          <Button onClick={() => handleEditAppointment(record._id)} style={{ marginRight: 8 }}>Edit</Button>
+          <Button onClick={() => handleCancelAppointment(record._id)} danger>Cancel</Button>
+        </span>
+      ),
+    },
+  
   ];
   return (
   
