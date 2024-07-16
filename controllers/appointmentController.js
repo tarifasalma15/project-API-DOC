@@ -1,5 +1,7 @@
 const Appointment = require('../models/bookAppointmentModels');
 const users = require('../models/userModels');
+const Notification = require('../models/notificationModel');
+
 
 const bookAppointmentController = async (req, res) => {
   try {
@@ -50,32 +52,11 @@ const getUserAppointmentsController = async (req, res) => {
       };
 
 
-const cancelAppointmentController = async (req, res) => {
-        try {
-          const { appointmentId } = req.params;
-          await Appointment.findByIdAndDelete(appointmentId);
-          res.status(200).send({ success: true, message: 'Appointment cancelled successfully' });
-        } catch (error) {
-          res.status(500).send({ success: false, message: 'Error cancelling appointment' });
-        }
-      };      
-
-
-const updateAppointmentController = async (req, res) => {
-    try {
-      const { appointmentId } = req.params;
-      const updatedData = req.body;
-      const updatedAppointment = await Appointment.findByIdAndUpdate(appointmentId, updatedData, { new: true });
-      res.status(200).send({ success: true, message: 'Appointment updated successfully', data: updatedAppointment });
-    } catch (error) {
-      res.status(500).send({ success: false, message: 'Error updating appointment' });
-    }
-  };      
 
  const getAppointmentDetailsController = async (req, res) => {
     try {
       const { appointmentId } = req.params;
-      const appointment = await Appointment.findById(appointmentId);
+      const appointment = await Appointment.findById(appointmentId).populate('userId doctorId');;
       if (!appointment) {
         return res.status(404).send({ success: false, message: 'Appointment not found' });
       }
@@ -84,4 +65,69 @@ const updateAppointmentController = async (req, res) => {
       res.status(500).send({ success: false, message: 'Error fetching appointment details' });
     }
   };
-module.exports = { bookAppointmentController,  getUserAppointmentsController, cancelAppointmentController, updateAppointmentController, getAppointmentDetailsController };
+
+// Contrôleur pour annuler un rendez-vous
+const cancelAppointmentController = async (req, res) => {
+    try {
+      const { appointmentId } = req.params;
+      const appointment = await Appointment.findByIdAndDelete(appointmentId).populate('userId doctorId');
+  
+      if (!appointment) {
+        return res.status(404).send({ success: false, message: 'Appointment not found' });
+      }
+  
+      // Créer des notifications pour le patient et le docteur
+      await Notification.create({
+        userId: appointment.userId,
+        message: `Your appointment with Dr. ${appointment.doctorId.name} on ${appointment.date} has been cancelled.`,
+      });
+      await Notification.create({
+        userId: appointment.doctorId,
+        message: `Your appointment with patient ${appointment.userId.name} on ${appointment.date} has been cancelled.`,
+      });
+  
+      res.status(200).send({ success: true, message: 'Appointment cancelled successfully' });
+    } catch (error) {
+      res.status(500).send({ success: false, message: 'Error cancelling appointment' });
+    }
+  };
+  
+  // Contrôleur pour modifier un rendez-vous
+  const updateAppointmentController = async (req, res) => {
+    try {
+      const { appointmentId } = req.params;
+      const updatedData = req.body;
+      const updatedAppointment = await Appointment.findByIdAndUpdate(appointmentId, updatedData, { new: true }).populate('userId doctorId');
+  
+      if (!updatedAppointment) {
+        return res.status(404).send({ success: false, message: 'Appointment not found' });
+      }
+  
+      // Créer des notifications pour le patient et le docteur
+      await Notification.create({
+        userId: updatedAppointment.userId,
+        message: `Your appointment with Dr. ${updatedAppointment.doctorId.name} on ${updatedAppointment.date} has been updated.`,
+      });
+      await Notification.create({
+        userId: updatedAppointment.doctorId,
+        message: `Your appointment with patient ${updatedAppointment.userId.name} on ${updatedAppointment.date} has been updated.`,
+      });
+  
+      res.status(200).send({ success: true, message: 'Appointment updated successfully', data: updatedAppointment });
+    } catch (error) {
+      res.status(500).send({ success: false, message: 'Error updating appointment' });
+    }
+  };
+  
+  // Contrôleur pour récupérer les notifications d'un utilisateur
+  const getUserNotificationsController = async (req, res) => {
+    try {
+      const notifications = await Notification.find({ userId: req.body.userId }).sort({ createdAt: -1 });
+      res.status(200).send({ success: true, data: notifications });
+    } catch (error) {
+      res.status(500).send({ success: false, message: 'Error fetching notifications' });
+    }
+  };
+
+
+module.exports = { bookAppointmentController,  getUserAppointmentsController, cancelAppointmentController, updateAppointmentController, getAppointmentDetailsController , getUserNotificationsController };

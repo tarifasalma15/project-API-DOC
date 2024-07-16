@@ -12,6 +12,7 @@ import Settings from './pages/Settings';
 import Appointments from './pages/Appointment';
 import BookAppointment from './pages/BookAppointment';
 import EditAppointment from './pages/EditAppointment';
+import Notifications from './pages/Notifications';
 
 
 const clientId = "679022050996-2ig8hertalm6vodug29iv9slussvor7o.apps.googleusercontent.com";
@@ -39,6 +40,7 @@ const App = () => {
           <Route path="/appointments" element={<Appointments />} />
           <Route path="/book-appointment/:doctorId" element={<BookAppointment />} />
           <Route path="/edit-appointment/:appointmentId" element={<EditAppointment />} />
+          <Route path="/notifications" element={<Notifications />} /> 
 
         </Routes>
       </BrowserRouter>

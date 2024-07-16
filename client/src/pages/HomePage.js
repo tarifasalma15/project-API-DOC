@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/HomeStyles.css';
 import background from '../assets/hero-bg.png';
+import Notifications from '../pages/Notifications'; 
 
 
 
@@ -113,6 +114,8 @@ const HomePage = () => {
   const handleEditAppointment = (appointmentId) => {
     navigate(`/edit-appointment/${appointmentId}`);
   };
+
+ 
   const columns = [
     {
       title: user && user.role === 'doctor' ? 'Patient' : 'Doctor',
@@ -166,7 +169,7 @@ const HomePage = () => {
           Profile
         </Button>
         <Button type="primary" onClick={handleAppointments}>
-          Appointments with doctors
+          Appointments 
         </Button>
         <Button type="primary" onClick={handleMessages}>
             Messages
@@ -174,9 +177,12 @@ const HomePage = () => {
           <Button type="primary" onClick={handleSettings}>
             Settings
           </Button>
+      
       </div>
       <h2>My Appointments</h2>
       <Table dataSource={appointments} columns={columns} rowKey="_id" loading={loading} />
+      <h2>Notifications</h2>
+      <Notifications /> 
     </div>
   );
 };

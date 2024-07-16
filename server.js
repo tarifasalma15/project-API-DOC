@@ -30,6 +30,7 @@ app.use(cors(
 // routes
 app.use('/api/v1/user', require('./routes/userRoutes'));
 app.use('/api/v1/appointments', require ('./routes/appointmentRoutes'))
+app.use('/api/v1/notifications', require('./routes/notificationRoutes')); 
 
 
 const server = http.createServer(app);
