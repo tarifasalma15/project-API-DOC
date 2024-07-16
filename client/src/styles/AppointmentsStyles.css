@@ -1,0 +1,67 @@
+.appointments-container {
+    padding: 20px;
+  }
+  
+  .return-button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+  
+  .return-button:hover {
+    background-color: #1675da;
+  }
+  
+  .doctors-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .doctors-table th,
+  .doctors-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .doctors-table th {
+    background-color: #007BFF; /* Couleur bleue pour le thème de la médecine */
+    color: white;
+  }
+  
+ 
+  
+  .doctors-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .doctors-table tr:hover {
+    background-color: #ddd;
+  }
+  
+  button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  

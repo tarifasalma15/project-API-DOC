@@ -29,7 +29,7 @@ app.use(cors(
 
 // routes
 app.use('/api/v1/user', require('./routes/userRoutes'));
-app.use('/api/v1/appointments', require('./routes/appointmentRoutes'));
+
 
 const server = http.createServer(app);
 
@@ -43,21 +43,6 @@ const io = socketIo(server, {
 
 io.on('connection', (socket) => {
     console.log('New client connected');
-    
-    socket.on('appointmentCreated', (appointment) => {
-        console.log('Appointment created: ', appointment);
-        io.emit('appointmentCreated', appointment);
-    });
-
-    socket.on('appointmentUpdated', (appointment) => {
-        console.log('Appointment updated: ', appointment);
-        io.emit('appointmentUpdated', appointment);
-    });
-
-    socket.on('appointmentDeleted', (appointmentId) => {
-        console.log('Appointment deleted: ', appointmentId);
-        io.emit('appointmentDeleted', appointmentId);
-    });
 
     socket.on('disconnect', () => {
         console.log('Client disconnected');

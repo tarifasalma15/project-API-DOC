@@ -1,57 +1,31 @@
-const Appointment = require('../models/appointmentModel');
-const io = require('../server').io; // Assurez-vous que `io` est exporté depuis server.js
+const Appointment = require('../models/bookAppointmentModels');
+const User = require('../models/userModels');
 
-// Create appointment
-const createAppointment = async (req, res) => {
+const bookAppointmentController = async (req, res) => {
   try {
-    console.log('Creating appointment with data:', req.body);
-    const newAppointment = new Appointment(req.body);
+    const { doctorId, date, time, description } = req.body;
+    const userId = req.body.userId;
+
+    const doctor = await User.findById(doctorId);
+    if (!doctor || doctor.role !== 'doctor') {
+      return res.status(404).send({ success: false, message: 'Doctor not found' });
+    }
+
+    const newAppointment = new Appointment({
+      doctorId,
+      userId,
+      date,
+      time,
+      description,
+    });
+
     await newAppointment.save();
-    io.emit('appointmentCreated', newAppointment); // Emit event
-    res.status(201).json(newAppointment);
+
+    res.status(201).send({ success: true, message: 'Appointment booked successfully' });
   } catch (error) {
-    console.error('Error creating appointment:', error);
-    res.status(500).json({ message: 'Server Error' });
+    console.log(error);
+    res.status(500).send({ success: false, message: 'Error booking appointment' });
   }
 };
 
-// Update appointment
-const updateAppointment = async (req, res) => {
-  try {
-    const updatedAppointment = await Appointment.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    io.emit('appointmentUpdated', updatedAppointment); // Emit event
-    res.status(200).json(updatedAppointment);
-  } catch (error) {
-    console.error('Error updating appointment:', error);
-    res.status(500).json({ message: 'Server Error' });
-  }
-};
-
-// Delete appointment
-const deleteAppointment = async (req, res) => {
-  try {
-    await Appointment.findByIdAndDelete(req.params.id);
-    io.emit('appointmentDeleted', req.params.id); // Emit event
-    res.status(200).json({ message: 'Appointment deleted' });
-  } catch (error) {
-    console.error('Error deleting appointment:', error);
-    res.status(500).json({ message: 'Server Error' });
-  }
-};
-
-// Get appointments
-const getAppointments = async (req, res) => {
-  try {
-    const appointments = await Appointment.find({}); // Vous pouvez filtrer par utilisateur ici
-    res.status(200).json(appointments);
-  } catch (error) {
-    console.error('Error fetching appointments:', error);
-    res.status(500).json({ message: 'Server Error' });
-  }
-};
-
-module.exports = { createAppointment, updateAppointment, deleteAppointment, getAppointments };
-
-
-
-
+module.exports = { bookAppointmentController };

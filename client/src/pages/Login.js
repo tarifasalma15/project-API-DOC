@@ -30,7 +30,7 @@ const Login = () => {
   };
 
   const onSuccess = async (response) => {
-    const userProfile = jwtDecode(response.credential); // Changer ici aussi
+    const userProfile = jwtDecode(response.credential); 
     console.log("Login Success! current User: ", userProfile);
 
     try {
@@ -58,8 +58,9 @@ const Login = () => {
   };
 
   return (
+    <div  style={{ background: `url(${background})`}}>
     <GoogleOAuthProvider clientId={clientId}>
-      <div className="form-container" style={{ backgroundImage: `url(${background})`}}>
+      <div className="form-container">
         <div className="google-login-container">
           <GoogleLogin
             onSuccess={onSuccess}
@@ -83,6 +84,7 @@ const Login = () => {
         </Form>
       </div>
     </GoogleOAuthProvider>
+    </div>
   );
 };
 

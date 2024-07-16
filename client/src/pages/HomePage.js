@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { List, Button, message } from 'antd';
+import React, { useEffect,useState } from 'react';
+import { Button } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import socket from '../socket';
 import '../styles/HomeStyles.css';
+import background from '../assets/hero-bg.png';
+
+
+
 
 const HomePage = () => {
-  const [appointments, setAppointments] = useState([]);
-  const [notifications, setNotifications] = useState([]);
+  const [user, setUser] = useState(null);
+
   const navigate = useNavigate();
 
   const getUserData = async () => {
     try {
-      console.log('Fetching user data');
       const res = await axios.post(
         '/api/v1/user/getUserData',
         {},
@@ -22,145 +24,73 @@ const HomePage = () => {
           },
         }
       );
+      
       console.log('User data fetched', res.data);
+      setUser(res.data.data);
     } catch (error) {
       console.log('Error fetching user data', error);
     }
   };
 
-  const getAppointments = async () => {
-    try {
-      console.log('Fetching appointments');
-      const res = await axios.get('/api/v1/appointments', {
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('token'),
-        },
-      });
-      console.log('Appointments fetched', res.data);
-      setAppointments(res.data);
-    } catch (error) {
-      console.error('Error fetching appointments', error);
-      message.error('Failed to load appointments');
-    }
-  };
-
-  const getNotifications = async () => {
-    try {
-      const res = await axios.get('/api/v1/notifications', {
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('token'),
-        },
-      });
-      setNotifications(res.data);
-    } catch (error) {
-      console.error('Error fetching notifications', error);
-      message.error('Failed to load notifications');
-    }
-  };
-
   useEffect(() => {
     getUserData();
-    getAppointments();
-    getNotifications();
-
-    // Socket.IO event listeners
-    socket.on('appointmentCreated', (appointment) => {
-      console.log('Appointment created event received', appointment);
-      setNotifications((prevNotifications) => [
-        ...prevNotifications,
-        `New appointment created: ${appointment.patientName} with Dr. ${appointment.doctorName}`,
-      ]);
-      setAppointments((prevAppointments) => [...prevAppointments, appointment]);
-    });
-
-    socket.on('appointmentUpdated', (appointment) => {
-      console.log('Appointment updated event received', appointment);
-      setNotifications((prevNotifications) => [
-        ...prevNotifications,
-        `Appointment updated: ${appointment.patientName} with Dr. ${appointment.doctorName}`,
-      ]);
-      setAppointments((prevAppointments) =>
-        prevAppointments.map((appt) =>
-          appt._id === appointment._id ? appointment : appt
-        )
-      );
-    });
-
-    socket.on('appointmentDeleted', (appointmentId) => {
-      console.log('Appointment deleted event received', appointmentId);
-      setNotifications((prevNotifications) => [
-        ...prevNotifications,
-        `Appointment deleted with ID: ${appointmentId}`,
-      ]);
-      setAppointments((prevAppointments) =>
-        prevAppointments.filter((appt) => appt._id !== appointmentId)
-      );
-    });
-
-    // Cleanup event listeners on component unmount
-    return () => {
-      socket.off('appointmentCreated');
-      socket.off('appointmentUpdated');
-      socket.off('appointmentDeleted');
-    };
   }, []);
+
+  useEffect(() => {
+    console.log('User state updated', user);
+  }, [user]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
   };
 
-  const goToNewAppointment = () => {
-    navigate('/new-appointment');
+  const handleProfile = () => {
+    navigate('/profile');
   };
 
-  const goToNotifications = () => {
-    navigate('/notifications');
+  const handleAppointments = () => {
+    navigate('/appointments');
+  };
+  
+  const handleMessages = () => {
+    navigate('/messages');
   };
 
+  const handleSettings = () => {
+    navigate('/settings');
+  };
   return (
-    <div className="home-container">
-      <h1>Welcome to the Doctor Appointment System</h1>
-      <Button type="primary" onClick={goToNewAppointment} style={{ marginRight: '10px' }}>
-        Book a New Appointment
-      </Button>
-      <Button type="default" onClick={goToNotifications} style={{ marginRight: '10px' }}>
-        View Notifications
-      </Button>
-      <Button type="default" onClick={handleLogout}>
-        Logout
-      </Button>
-
-      <div className="list-container">
-        <h2>Your Appointments</h2>
-        <List
-          itemLayout="horizontal"
-          dataSource={appointments}
-          renderItem={(appointment) => (
-            <List.Item>
-              <List.Item.Meta
-                title={`${appointment.patientName} with Dr. ${appointment.doctorName}`}
-                description={`${appointment.date} at ${appointment.time}`}
-              />
-            </List.Item>
-          )}
-        />
-      </div>
-
-      <div className="notifications-container">
-        <h2>Notifications</h2>
-        <List
-          itemLayout="horizontal"
-          dataSource={notifications}
-          renderItem={(notification, index) => (
-            <List.Item key={index}>
-              <List.Item.Meta description={notification} />
-            </List.Item>
-          )}
-        />
+  
+    <div className="home-container" style={{ backgroundImage: `url(${background})`}}>
+      <h1>Medicare</h1>
+      {user ? (
+        <h2>
+          Hello, {user.role === 'doctor' ? 'Doctor' : 'Patient'} {user.name}
+        </h2>
+      ) : (
+        <h2>Loading user data...</h2>
+      )}
+      <div className="home-buttons">
+        <Button type="default" className='logout-button'onClick={handleLogout}>
+          Logout
+        </Button>
+        <Button type="primary" onClick={handleProfile}>
+          Profile
+        </Button>
+        <Button type="primary" onClick={handleAppointments}>
+          Appointments
+        </Button>
+        <Button type="primary" onClick={handleMessages}>
+            Messages
+          </Button>
+          <Button type="primary" onClick={handleSettings}>
+            Settings
+          </Button>
       </div>
     </div>
   );
 };
 
 export default HomePage;
+

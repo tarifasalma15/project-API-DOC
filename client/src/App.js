@@ -1,11 +1,17 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { gapi } from 'gapi-script';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
+
 import HomePage from './pages/HomePage';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import NewAppointment from './pages/NewAppointment';
-import { gapi } from 'gapi-script';
-import { GoogleOAuthProvider } from '@react-oauth/google';
+import Messages from './pages/Message';
+import Settings from './pages/Settings';
+import Appointments from './pages/Appointment';
+import BookAppointment from './pages/BookAppointment';
+
 
 const clientId = "679022050996-2ig8hertalm6vodug29iv9slussvor7o.apps.googleusercontent.com";
 
@@ -27,7 +33,11 @@ const App = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/new-appointment" element={<NewAppointment />} />
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/appointments" element={<Appointments />} />
+          <Route path="/book-appointment/:doctorId" element={<BookAppointment />} />
+
         </Routes>
       </BrowserRouter>
     </GoogleOAuthProvider>

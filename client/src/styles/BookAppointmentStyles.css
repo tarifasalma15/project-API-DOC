@@ -1,0 +1,35 @@
+.book-appointment-container {
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .book-appointment-form {
+    margin-top: 20px;
+  }
+  
+  .book-appointment-form .ant-form-item {
+    margin-bottom: 16px;
+  }
+  
+  .book-appointment-form .ant-form-item-label > label {
+    font-weight: bold;
+  }
+  
+  .book-appointment-form .ant-form-item-control-input {
+    width: 100%;
+  }
+  
+  .book-appointment-form .ant-btn-primary {
+    background-color: #007BFF;
+    border-color: #007BFF;
+  }
+  
+  .book-appointment-form .ant-btn-primary:hover {
+    background-color: #007BFF;
+    border-color: #007BFF;
+  }
+  
