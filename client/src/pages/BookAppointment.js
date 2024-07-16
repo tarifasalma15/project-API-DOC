@@ -1,55 +1,76 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Form, Input, Button, DatePicker, TimePicker, message } from 'antd';
+import { Form, Input, Button, DatePicker, TimePicker, message, Spin } from 'antd';
+import moment from 'moment';
 import '../styles/BookAppointmentStyles.css';
 
 const BookAppointment = () => {
-  const navigate = useNavigate();
   const { doctorId } = useParams();
+  const navigate = useNavigate();
   const [doctor, setDoctor] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const getDoctorDetails = async () => {
       try {
-        const res = await axios.get(`/api/v1/user/getDoctor/${doctorId}`, {
+        const response = await axios.get(`/api/v1/user/getDoctor/${doctorId}`, {
           headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('token'),
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
-        setDoctor(res.data.doctor);
+        setDoctor(response.data.doctor);
       } catch (error) {
-        console.log('Error fetching doctor details', error);
+        message.error('Error fetching doctor details');
+      } finally {
+        setLoading(false);
       }
     };
+
     getDoctorDetails();
   }, [doctorId]);
 
-  const onFinish = async (values) => {
+  
+
+    const onFinish = async (values) => {
+    setSubmitting(true);
     try {
-      const res = await axios.post(
-        '/api/v1/appointments/book',
+      const { date, time, ...rest } = values;
+
+      const momentDate = moment.isMoment(date) ? date : moment(date);
+      const momentTime = moment.isMoment(time) ? time : moment(time);
+
+      if (!momentDate.isValid() || !momentTime.isValid()) {
+        throw new Error('Date or Time is not a valid moment object');
+      }
+      const formattedDate = momentDate.format('YYYY-MM-DD');
+      const formattedTime = momentTime.format('HH:mm');
+
+      const response = await axios.post('/api/v1/appointments', 
+        { ...rest, date: formattedDate, time: formattedTime },
         {
           doctorId,
-          date: values.date.format('YYYY-MM-DD'),
-          time: values.time.format('HH:mm'),
-          description: values.description,
+          date: formattedDate,
+          time: formattedTime,
+          ...rest,
         },
         {
           headers: {
-            Authorization: 'Bearer ' + localStorage.getItem('token'),
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         }
       );
-      if (res.data.success) {
+      if (response.data.success) {
         message.success('Appointment booked successfully');
-        navigate('/');
+        navigate(-1); // Navigate to the previous page
       } else {
-        message.error(res.data.message);
+        message.error(response.data.message);
       }
     } catch (error) {
-      console.log('Error booking appointment', error);
-      message.error('Error booking appointment');
+      message.error(error.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -57,15 +78,19 @@ const BookAppointment = () => {
     navigate('/');
   };
 
+  if (loading) {
+    return <Spin size="large" className="loading-spinner" />;
+  }
+
   if (!doctor) {
-    return <div>Loading doctor details...</div>;
+    return <div>Doctor not found</div>;
   }
 
   return (
     <div className="book-appointment-container">
-      <button className="return-button" onClick={handleReturnHome}>
+      <Button className="return-button" onClick={handleReturnHome}>
         Return
-      </button>
+      </Button>
       <h1>Book Appointment</h1>
       <p>Booking appointment with Dr. {doctor.name}</p>
       <Form
@@ -96,7 +121,7 @@ const BookAppointment = () => {
           <Input.TextArea rows={4} />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={submitting}>
             Book Appointment
           </Button>
         </Form.Item>

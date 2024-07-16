@@ -28,4 +28,6 @@ const bookAppointmentController = async (req, res) => {
   }
 };
 
+
+
 module.exports = { bookAppointmentController };
