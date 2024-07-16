@@ -4,8 +4,8 @@ const colors = require ('colors')
 const connectDB = async() => {
     try {
         await mongoose.connect(process.env.DB_URL ,  {
-            // useNewUrlParser: true,
-            // useUnifiedTopology: true,
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
             serverSelectionTimeoutMS: 30000,
             socketTimeoutMS: 45000, 
         });

@@ -1,12 +1,12 @@
 const Appointment = require('../models/bookAppointmentModels');
-const User = require('../models/userModels');
+const users = require('../models/userModels');
 
 const bookAppointmentController = async (req, res) => {
   try {
     const { doctorId, date, time, description } = req.body;
     const userId = req.body.userId;
 
-    const doctor = await User.findById(doctorId);
+    const doctor = await users.findById(doctorId);
     if (!doctor || doctor.role !== 'doctor') {
       return res.status(404).send({ success: false, message: 'Doctor not found' });
     }
@@ -18,7 +18,7 @@ const bookAppointmentController = async (req, res) => {
       time,
       description,
     });
-
+    console.log('New appointment:', newAppointment);
     await newAppointment.save();
 
     res.status(201).send({ success: true, message: 'Appointment booked successfully' });

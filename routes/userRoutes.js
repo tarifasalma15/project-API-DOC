@@ -14,7 +14,6 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-const appointmentRoutes = require('./appointmentRoutes');
 
 // Routes
 router.post('/login', loginController);
@@ -25,7 +24,6 @@ router.post('/getUserData', authMiddleware, authController);
 router.get('/getAllDoctors', authMiddleware, getAllDoctorsController);
 router.get('/getDoctor/:id', authMiddleware, getDoctorController);
 
-router.use('/appointments', appointmentRoutes);
 
 
 module.exports = router;

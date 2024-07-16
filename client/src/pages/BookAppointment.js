@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Form, Input, DatePicker, TimePicker, Button, message, Spin } from 'antd';
 import axios from 'axios';
-import { Form, Input, Button, DatePicker, TimePicker, message, Spin } from 'antd';
+import { useParams, useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import '../styles/BookAppointmentStyles.css';
 
 const BookAppointment = () => {
   const { doctorId } = useParams();
   const navigate = useNavigate();
+  const [form] = Form.useForm();
   const [doctor, setDoctor] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const getDoctorDetails = async () => {
@@ -31,50 +31,36 @@ const BookAppointment = () => {
     getDoctorDetails();
   }, [doctorId]);
 
-  
-
-    const onFinish = async (values) => {
-    setSubmitting(true);
+  const onFinish = async (values) => {
     try {
       const { date, time, ...rest } = values;
-
-      const momentDate = moment.isMoment(date) ? date : moment(date);
-      const momentTime = moment.isMoment(time) ? time : moment(time);
-
-      if (!momentDate.isValid() || !momentTime.isValid()) {
-        throw new Error('Date or Time is not a valid moment object');
-      }
-      const formattedDate = momentDate.format('YYYY-MM-DD');
-      const formattedTime = momentTime.format('HH:mm');
-
-      const response = await axios.post('/api/v1/appointments', 
-        { ...rest, date: formattedDate, time: formattedTime },
-        {
-          doctorId,
-          date: formattedDate,
-          time: formattedTime,
-          ...rest,
-        },
+      const formattedDate = moment(date).format('YYYY-MM-DD');
+      const formattedTime = moment(time).format('HH:mm');
+      const res = await axios.post('/api/v1/appointments/book', 
+        { ...rest, date: formattedDate, time: formattedTime, doctorId },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: 'Bearer ' + localStorage.getItem('token'),
           },
         }
       );
-      if (response.data.success) {
+      if (res.data.success) {
         message.success('Appointment booked successfully');
-        navigate(-1); // Navigate to the previous page
-      } else {
-        message.error(response.data.message);
+        form.resetFields();
+        navigate('/');
       }
     } catch (error) {
-      message.error(error.message);
-    } finally {
-      setSubmitting(false);
+      console.error('Error booking appointment:', error);
+      message.error('Failed to book appointment');
     }
   };
 
-  const handleReturnHome = () => {
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
+  const goToHome = () => {
     navigate('/');
   };
 
@@ -88,40 +74,25 @@ const BookAppointment = () => {
 
   return (
     <div className="book-appointment-container">
-      <Button className="return-button" onClick={handleReturnHome}>
-        Return
+      <Button type="default" onClick={goToHome} style={{ marginRight: '10px' }}>
+        Home
       </Button>
-      <h1>Book Appointment</h1>
-      <p>Booking appointment with Dr. {doctor.name}</p>
-      <Form
-        name="book_appointment"
-        onFinish={onFinish}
-        layout="vertical"
-        className="book-appointment-form"
-      >
-        <Form.Item
-          name="date"
-          label="Date"
-          rules={[{ required: true, message: 'Please select a date' }]}
-        >
+      <Button type="default" onClick={handleLogout}>
+        Logout
+      </Button>
+      <h1>Book Appointment with Dr. {doctor.name}</h1>
+      <Form form={form} layout="vertical" onFinish={onFinish} style={{ marginTop: '20px' }}>
+        <Form.Item label="Date" name="date" rules={[{ required: true, message: 'Please select the date!' }]}>
           <DatePicker />
         </Form.Item>
-        <Form.Item
-          name="time"
-          label="Time"
-          rules={[{ required: true, message: 'Please select a time' }]}
-        >
-          <TimePicker use12Hours format="h:mm a" />
+        <Form.Item label="Time" name="time" rules={[{ required: true, message: 'Please select the time!' }]}>
+          <TimePicker />
         </Form.Item>
-        <Form.Item
-          name="description"
-          label="Description"
-          rules={[{ required: true, message: 'Please add a description' }]}
-        >
+        <Form.Item label="Description" name="description" rules={[{ required: true, message: 'Please add a description!' }]}>
           <Input.TextArea rows={4} />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit" loading={submitting}>
+          <Button type="primary" htmlType="submit">
             Book Appointment
           </Button>
         </Form.Item>
