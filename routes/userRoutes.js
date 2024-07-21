@@ -10,6 +10,7 @@ const {
   getAllDoctorsController ,
   getDoctorController
 } = require("../controllers/userCtrl");
+
 const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();

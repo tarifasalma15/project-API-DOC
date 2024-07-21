@@ -2,6 +2,7 @@ const Appointment = require('../models/bookAppointmentModels');
 const users = require('../models/userModels');
 const Notification = require('../models/notificationModel');
 const { io } = require('../server'); // Import io from server
+const moment = require('moment'); // Import moment
 
 
 const bookAppointmentController = async (req, res) => {
@@ -17,8 +18,8 @@ const bookAppointmentController = async (req, res) => {
     const newAppointment = new Appointment({
       doctorId,
       userId,
-      date,
-      time,
+      date: moment(date).toISOString(), // Formater la date en ISO
+      time: moment(`${date}T${time}`, 'YYYY-MM-DDTHH:mm').toISOString(), 
       description,
     });
     console.log('New appointment:', newAppointment);
@@ -76,15 +77,19 @@ const cancelAppointmentController = async (req, res) => {
       if (!appointment) {
         return res.status(404).send({ success: false, message: 'Appointment not found' });
       }
+      
+      const formattedDate = moment(appointment.date).format('ddd MMM D YYYY');
+      const formattedTime = moment(appointment.time, 'HH:mm').format('HH:mm');
   
       // Créer des notifications pour le patient et le docteur
       await Notification.create({
         userId: appointment.userId._id,
-        message: `Your appointment with Dr. ${appointment.doctorId.name} on ${appointment.date} has been cancelled.`,
+        message: `Your appointment with Dr. ${appointment.doctorId.name} on ${formattedDate} at ${formattedTime} has been cancelled.`,
+
       });
       await Notification.create({
         userId: appointment.doctorId._id,
-        message: `Your appointment with patient ${appointment.userId.name} on ${appointment.date} has been cancelled.`,
+        message: `Your appointment with patient ${appointment.userId.name} on ${formattedDate} at ${formattedTime} has been cancelled.`,
       });
   
       res.status(200).send({ success: true, message: 'Appointment cancelled successfully' });
@@ -98,20 +103,31 @@ const cancelAppointmentController = async (req, res) => {
     try {
       const { appointmentId } = req.params;
       const updatedData = req.body;
+
+      console.log(`Received update request for appointment ID: ${appointmentId}`);
+      console.log(`Updated data: ${JSON.stringify(updatedData)}`);
+
+       // Formater les dates et heures
+      updatedData.date = moment(updatedData.date).toISOString();
+      updatedData.time = moment(updatedData.time, 'HH:mm').format('HH:mm');
+
       const updatedAppointment = await Appointment.findByIdAndUpdate(appointmentId, updatedData, { new: true }).populate('userId doctorId');
   
       if (!updatedAppointment) {
         return res.status(404).send({ success: false, message: 'Appointment not found' });
       }
-  
+
+      const formattedDate = moment(updatedAppointment.date).format('ddd MMM D YYYY');
+      const formattedTime = moment(updatedAppointment.time, 'HH:mm').format('HH:mm');
+      
       // Créer des notifications pour le patient et le docteur
       await Notification.create({
         userId: updatedAppointment.userId,
-        message: `Your appointment with Dr. ${updatedAppointment.doctorId.name} on ${updatedAppointment.date} has been updated.`,
+        message: `Your appointment with Dr. ${updatedAppointment.doctorId.name} on ${formattedDate} at ${formattedTime} has been updated.`,
       });
       await Notification.create({
         userId: updatedAppointment.doctorId,
-        message: `Your appointment with patient ${updatedAppointment.userId.name} on ${updatedAppointment.date} has been updated.`,
+        message: `Your appointment with patient ${updatedAppointment.userId.name} on ${formattedDate} at ${formattedTime} has been updated.`,
       });
       res.status(200).send({ success: true, message: 'Appointment updated successfully', data: updatedAppointment });
     } catch (error) {

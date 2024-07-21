@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Form, Input, DatePicker, TimePicker, Button, message, Spin } from 'antd';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import moment from 'moment';
 import '../styles/BookAppointmentStyles.css';
+import moment from 'moment';
 
 const BookAppointment = () => {
   const { doctorId } = useParams();
@@ -36,6 +36,7 @@ const BookAppointment = () => {
       const { date, time, ...rest } = values;
       const formattedDate = moment(date).format('YYYY-MM-DD');
       const formattedTime = moment(time).format('HH:mm');
+  
       const res = await axios.post('/api/v1/appointments/book', 
         { ...rest, date: formattedDate, time: formattedTime, doctorId },
         {
@@ -93,7 +94,7 @@ const BookAppointment = () => {
           <DatePicker />
         </Form.Item>
         <Form.Item label="Time" name="time" rules={[{ required: true, message: 'Please select the time!' }]}>
-          <TimePicker />
+          <TimePicker format="HH:mm"  />
         </Form.Item>
         <Form.Item label="Description" name="description" rules={[{ required: true, message: 'Please add a description!' }]}>
           <Input.TextArea rows={4} />

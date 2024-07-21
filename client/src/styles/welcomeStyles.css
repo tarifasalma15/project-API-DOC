@@ -1,0 +1,113 @@
+/* welcomeStyles.css */
+ 
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+ 
+.welcome-container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f0f0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+ 
+.welcome-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+ 
+.welcome-logo {
+  width: 100px;
+  height: auto;
+}
+ 
+.welcome-nav {
+  display: flex;
+  gap: 20px;
+}
+ 
+.nav-link {
+  text-decoration: none;
+  color: #000;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-link:hover {
+  color: #007bff;
+}
+.nav-link svg {
+  font-size: 1.2rem;
+}
+ 
+.welcome-main {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+}
+ 
+.welcome-block {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 40px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  max-width: 1200px; /* Ajuster la taille maximale du bloc */
+}
+ 
+.welcome-content p.intro {
+    font-size: 1.1rem; /* Slightly larger font for introduction */
+    color: #555; /* Slightly darker color */
+    margin: 20px 0;
+    padding: 10px 0; /* Add padding for better separation */
+    border-left: 4px solid #007bff; /* Add a border for emphasis */
+    padding-left: 15px; /* Add padding inside the border */
+    background-color: #f9f9f9; /* Light background for emphasis */
+  }
+ 
+.welcome-content h1 {
+  font-size: 2.5rem;
+  color: #007bff;
+}
+ 
+.welcome-content .icon {
+  font-size: 2.5rem;
+  color: #007bff;
+}
+ 
+.welcome-content p {
+  font-size: 1rem;
+  color: #333;
+  margin: 20px 0;
+  line-height: 1.6; /* Improve line height for readability */
+}
+ 
+.learn-more-btn {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+ 
+.learn-more-btn:hover {
+  background-color: #0056b3;
+}
+ 
+.welcome-image img {
+  width: 500px;
+  height: auto;
+  border-radius: 8px;
+}
+ 

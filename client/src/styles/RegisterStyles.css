@@ -1,36 +1,169 @@
-.form-container { 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+   
+  .login-background {
+    background-color: #f0f0f0; /* Light grey */
     height: 100vh;
-    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* To prevent animated elements from overflowing */
+    position: relative;
+  }
+   
+  .animation-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* To place animations in the background */
+  }
+   
+  .animation-circle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(0, 123, 255, 0.5);
+    animation: move 20s linear infinite;
+  }
+   
+  .animation-circle-1 {
+    width: 200px;
+    height: 200px;
+    top: 20%;
+    left: 15%;
+  }
+   
+  .animation-circle-2 {
+    width: 300px;
+    height: 300px;
+    top: 60%;
+    left: 70%;
+  }
+   
+  .animation-circle-3 {
+    width: 150px;
+    height: 150px;
+    top: 80%;
+    left: 20%;
+  }
+   
+  @keyframes move {
+    0% {
+      transform: translate(0, 0) scale(1);
+    }
+    50% {
+      transform: translate(50px, 50px) scale(1.2);
+    }
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+  }
+   
+  .form-container {
+    background: #fff;
     padding: 20px;
-    border: 1px solid #ccc;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center; 
-
-}
-
-.register-form { 
-    border: 1px solid black;
-    padding: 30px;
-    width: 40%; 
-}
-
-.google-login-container {
-    margin-bottom: 20px; 
-}
-
-.register-form button {
-    width: 100%; 
-}
-
-
-.logo {
-    display: block;
-    margin: 0 auto 20px auto;
-    width: 100px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 600px; /* Increase width for a more horizontal form */
+    width: 100%;
+    position: relative;
+    z-index: 1; /* To place the form above animations */
+  }
+   
+  .form-image-container {
+    position: relative;
+  }
+   
+  .form-image {
+    width: 100%;
     height: auto;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+   
+  .text-on-image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #000; /* Change text color to black */
+    font-size: 2rem;
+    background-color: rgba(255, 255, 255, 0.6); /* Slightly transparent for readability */
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold; /* Change text style */
+  }
+   
+  .register-form {
+    width: 100%;
+    padding: 20px 40px 0; /* Adjust padding to match the image */
+  }
+   
+  .logo {
+    width: 100px;
+    margin: 0 auto 20px;
+  }
+   
+  .text-center {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+   
+  .forgot-password-container {
+    text-align: left;
+  }
+   
+  .forgot-password {
+    display: block;
+    margin-top: 5px; /* Place link just below password field */
+    color: #a0a0a0; /* Lighter color */
+    text-decoration: underline;
+  }
+   
+  .btn-btn-primary {
+    width: 200px; /* Reduce button width */
+    padding: 10px;
+    border: none;
+    border-radius: 20px; /* Make the button more rounded */
+    background: #007bff; /* Blue */
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto; /* Center the button and add space above */
+  }
+   
+  .btn-btn-primary:hover {
+    background: #0056b3; /* Dark blue */
+  }
+   
+  .form-new-image {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 70px; /* Enlarge bottom right image */
+    height: auto;
+  }
+   
+  .return-link {
+    display: block;
+    margin-top: 15px;
+    text-align: center;
+    color: #007bff;
+    text-decoration: none;
+  }
+   
+  .return-link:hover {
+    text-decoration: underline;
+  }
+   
+  .google-login-container {
+    margin-bottom: 20px;
   }

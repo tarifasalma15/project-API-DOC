@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Form, Input, Button, DatePicker, TimePicker, message } from 'antd';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -10,7 +10,7 @@ const EditAppointment = () => {
   const navigate = useNavigate();
   const { appointmentId } = useParams();
 
-  const getAppointmentDetails = async () => {
+  const getAppointmentDetails = useCallback(async () => {
     try {
       const res = await axios.get(`/api/v1/appointments/${appointmentId}`, {
         headers: {
@@ -28,11 +28,16 @@ const EditAppointment = () => {
     } finally {
       setLoading(false);
     }
-  };
+  },[appointmentId]);
 
   const onFinish = async (values) => {
+
     try {
-      const res = await axios.put(`/api/v1/appointments/update/${appointmentId}`, values, {
+      const { date, time, ...rest } = values;
+      const formattedDate = moment(date).toISOString(); // Formater la date en format ISO
+      const formattedTime = moment(time).format('HH:mm');
+      const res = await axios.put(`/api/v1/appointments/update/${appointmentId}`, { ...rest, date: formattedDate, time: formattedTime },
+         {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('token'),
         },
@@ -51,7 +56,7 @@ const EditAppointment = () => {
 
   useEffect(() => {
     getAppointmentDetails();
-  }, []);
+  }, [getAppointmentDetails]);
 
   if (loading) {
     return <div>Loading...</div>;

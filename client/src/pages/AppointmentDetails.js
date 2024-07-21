@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Descriptions, Spin, message } from 'antd';
@@ -8,7 +8,7 @@ const AppointmentDetails = () => {
   const [appointment, setAppointment] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const getAppointmentDetails = async () => {
+  const getAppointmentDetails = useCallback(async () => {
     try {
       const res = await axios.get(`/api/v1/appointments/${id}`, {
         headers: {
@@ -22,11 +22,12 @@ const AppointmentDetails = () => {
       message.error('Failed to load appointment details');
       setLoading(false);
     }
-  };
+  
+  }, [id]);
 
   useEffect(() => {
     getAppointmentDetails();
-  }, [id]);
+  }, [getAppointmentDetails]);
 
   if (loading) {
     return <Spin />;

@@ -5,7 +5,7 @@ const Messages = () => {
   return (
     <div>
       <h2>Messages</h2>
-      <p>Your messages will be displayed here.</p>
+      <p>messages will be displayed here.</p>
     </div>
   );
 };

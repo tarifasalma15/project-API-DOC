@@ -4,6 +4,8 @@ import { gapi } from 'gapi-script';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 
+
+import Welcome from './pages/welcome';
 import HomePage from './pages/HomePage';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -33,19 +35,20 @@ const App = () => {
     <GoogleOAuthProvider clientId={clientId}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/appointments" element={<Appointments />} />
           <Route path="/book-appointment/:doctorId" element={<BookAppointment />} />
-          <Route path="/edit-appointment/:appointmentId" element={<EditAppointment />} />
+          <Route path="/edit-appointment/:appointmentId" element={<EditAppointment />}  />
           <Route path="/notifications" element={<Notifications />} /> 
-          <Route path="/appointment-details/:id" element={<AppointmentDetails />} /> {/* Add the new route */}
-
+          <Route path="/appointment-details/:id" element={<AppointmentDetails />} /> 
+          <Route path="/welcome" element={<Welcome />} />
         </Routes>
       </BrowserRouter>
+
     </GoogleOAuthProvider>
   );
 };

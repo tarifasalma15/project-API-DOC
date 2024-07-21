@@ -5,7 +5,7 @@ const Settings = () => {
   return (
     <div>
       <h2>Settings</h2>
-      <p>Your settings will be displayed here.</p>
+      <p>settings will be displayed here.</p>
     </div>
   );
 };

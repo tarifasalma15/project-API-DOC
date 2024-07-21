@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { List, message } from 'antd';
 import axios from 'axios';
+import moment from 'moment';
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -39,7 +40,7 @@ const Notifications = () => {
         <List.Item>
           <List.Item.Meta
             title={notification.message}
-            description={new Date(notification.createdAt).toLocaleString()}
+            description={moment(notification.createdAt).format('DD/MM/YYYY HH:mm:ss')}
           />
         </List.Item>
       )}
