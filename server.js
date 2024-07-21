@@ -49,8 +49,22 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('Client disconnected');
     });
-});
+    socket.on('appointmentCreated', (appointment) => {
+        console.log('Appointment created: ', appointment);
+        io.emit('appointmentCreated', appointment);
+    });
 
+    socket.on('appointmentUpdated', (appointment) => {
+        console.log('Appointment updated: ', appointment);
+        io.emit('appointmentUpdated', appointment);
+    });
+
+    socket.on('appointmentDeleted', (appointmentId) => {
+        console.log('Appointment deleted: ', appointmentId);
+        io.emit('appointmentDeleted', appointmentId);
+    });
+});
+module.exports = { app, server, io };
 // listen port
 const port = process.env.PORT || 8080;
 

@@ -1,10 +1,11 @@
 import React, { useEffect,useState } from 'react';
-import { Button, Table , message } from 'antd';
+import { Button, Table , message,List,notification } from 'antd';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/HomeStyles.css';
 import background from '../assets/hero-bg.png';
 import Notifications from '../pages/Notifications'; 
+import socket from '../socket';
 
 
 
@@ -15,6 +16,7 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const [notifications, setNotifications] = useState([]);
 
 
   const getUserData = async () => {
@@ -58,6 +60,71 @@ const HomePage = () => {
   useEffect(() => {
     getUserData();
     getUserAppointments();
+  
+    // Socket.IO event listeners
+    socket.on('appointmentCreated', (appointment) => {
+      console.log('Appointment created event received', appointment);
+      const message = `New appointment created: ${appointment.patientName} with Dr. ${appointment.doctorName}`;
+      notification.info({
+        message: 'New Appointment',
+        description: message,
+        onClick: () => {
+          navigate(`/appointment-details/${appointment._id}`);
+        },
+      });
+      setNotifications((prevNotifications) => [
+        ...prevNotifications,
+        { message, appointmentId: appointment._id },
+      ]);
+      setAppointments((prevAppointments) => [...prevAppointments, appointment]);
+    });
+
+    socket.on('appointmentUpdated', (appointment) => {
+      console.log('Appointment updated event received', appointment);
+      const message = `Appointment updated: ${appointment.patientName} with Dr. ${appointment.doctorName}`;
+      notification.info({
+        message: 'Appointment Updated',
+        description: message,
+        onClick: () => {
+          navigate(`/appointment-details/${appointment._id}`);
+        },
+      });
+      setNotifications((prevNotifications) => [
+        ...prevNotifications,
+        { message, appointmentId: appointment._id },
+      ]);
+      setAppointments((prevAppointments) =>
+        prevAppointments.map((appt) =>
+          appt._id === appointment._id ? appointment : appt
+        )
+      );
+    });
+
+    socket.on('appointmentDeleted', (appointmentId) => {
+      console.log('Appointment deleted event received', appointmentId);
+      const message = `Appointment deleted with ID: ${appointmentId}`;
+      notification.info({
+        message: 'Appointment Deleted',
+        description: message,
+        onClick: () => {
+          navigate(`/appointment-details/${appointmentId}`);
+        },
+      });
+      setNotifications((prevNotifications) => [
+        ...prevNotifications,
+        { message, appointmentId },
+      ]);
+      setAppointments((prevAppointments) =>
+        prevAppointments.filter((appt) => appt._id !== appointmentId)
+      );
+    });
+
+    // Cleanup event listeners on component unmount
+    return () => {
+      socket.off('appointmentCreated');
+      socket.off('appointmentUpdated');
+      socket.off('appointmentDeleted');
+    };
   }, []);
 
   
@@ -71,7 +138,9 @@ const HomePage = () => {
   useEffect(() => {
     console.log('User state updated', user);
   }, [user]);
+      
 
+  
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
@@ -182,7 +251,16 @@ const HomePage = () => {
       <h2>My Appointments</h2>
       <Table dataSource={appointments} columns={columns} rowKey="_id" loading={loading} />
       <h2>Notifications</h2>
-      <Notifications /> 
+      <Notifications />
+      <List
+        itemLayout="horizontal"
+        dataSource={notifications}
+        renderItem={(notification, index) => (
+          <List.Item key={index}>
+            <List.Item.Meta description={notification.message} />
+          </List.Item>
+        )}
+      />
     </div>
   );
 };

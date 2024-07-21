@@ -1,6 +1,7 @@
 const Appointment = require('../models/bookAppointmentModels');
 const users = require('../models/userModels');
 const Notification = require('../models/notificationModel');
+const { io } = require('../server'); // Import io from server
 
 
 const bookAppointmentController = async (req, res) => {
@@ -78,11 +79,11 @@ const cancelAppointmentController = async (req, res) => {
   
       // Créer des notifications pour le patient et le docteur
       await Notification.create({
-        userId: appointment.userId,
+        userId: appointment.userId._id,
         message: `Your appointment with Dr. ${appointment.doctorId.name} on ${appointment.date} has been cancelled.`,
       });
       await Notification.create({
-        userId: appointment.doctorId,
+        userId: appointment.doctorId._id,
         message: `Your appointment with patient ${appointment.userId.name} on ${appointment.date} has been cancelled.`,
       });
   
@@ -112,7 +113,6 @@ const cancelAppointmentController = async (req, res) => {
         userId: updatedAppointment.doctorId,
         message: `Your appointment with patient ${updatedAppointment.userId.name} on ${updatedAppointment.date} has been updated.`,
       });
-  
       res.status(200).send({ success: true, message: 'Appointment updated successfully', data: updatedAppointment });
     } catch (error) {
       res.status(500).send({ success: false, message: 'Error updating appointment' });
@@ -128,6 +128,19 @@ const cancelAppointmentController = async (req, res) => {
       res.status(500).send({ success: false, message: 'Error fetching notifications' });
     }
   };
+  // Get appointment by ID
+const getAppointment = async (req, res) => {
+    try {
+      const appointment = await Appointment.findById(req.params.id);
+      if (!appointment) {
+        return res.status(404).json({ success: false, message: 'Appointment not found' });
+      }
+      res.status(200).json({ success: true, data: appointment });
+    } catch (error) {
+      console.error('Error fetching appointment details:', error);
+      res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+  };
 
 
-module.exports = { bookAppointmentController,  getUserAppointmentsController, cancelAppointmentController, updateAppointmentController, getAppointmentDetailsController , getUserNotificationsController };
+module.exports = { bookAppointmentController,  getUserAppointmentsController, cancelAppointmentController, updateAppointmentController, getAppointmentDetailsController , getUserNotificationsController, getAppointment };

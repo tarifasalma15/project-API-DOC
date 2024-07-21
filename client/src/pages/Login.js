@@ -37,6 +37,7 @@ const Login = () => {
       const res = await axios.post('/api/v1/user/google-login', {
         email: userProfile.email,
         name: userProfile.name,
+        role : "user"
       });
 
       if (res.data.success) {

@@ -81,12 +81,16 @@ const authController = async (req, res) => {
 // Google login controller
 const googleLoginController = async (req, res) => {
   try {
-    const { email, name , role } = req.body;
+    const { email, name, role} = req.body;
+
+    if (!role) {
+      return res.status(400).send({ message: 'Role is required', success: false });
+    }
 
     let user = await userModel.findOne({ email });
 
     if (!user) {
-      user = new userModel({ email, name, password: 'google-login', role }); // Vous pouvez utiliser un mot de passe fictif
+      user = new userModel({ email, name, password: 'google-login', role }); 
       await user.save();
     }
 
@@ -103,6 +107,10 @@ const googleLoginController = async (req, res) => {
 const googleRegisterController = async (req, res) => {
   try {
     const { email, name, role } = req.body;
+    console.log("Request Body:", req.body);
+    if (!role) {
+      return res.status(400).send({ message: 'Role is required', success: false });
+    }
 
     let user = await userModel.findOne({ email });
 
